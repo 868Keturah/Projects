@@ -1,4 +1,4 @@
-# ⬡ DocCraft — AI Documentation Agent
+# ⬡ DocCraft - AI Documentation Agent
 
 A free, browser-based documentation generator. Upload any files — scripts, images, PDFs, configs — and get back a fully structured guide with numbered steps, callouts, image placeholders, and a checklist.
 
