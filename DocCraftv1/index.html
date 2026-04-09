@@ -21,7 +21,7 @@
 
 <section class="hero">
   <h1>Turn any file into<br><em>clean documentation.</em></h1>
-  <p class="hero-sub">Upload scripts, images, PDFs, configs — the agent reads everything and generates a structured guide with sections, callouts, steps, and checklists. Completely free, no account needed.</p>
+  <p class="hero-sub">Upload scripts, images, PDFs, configs - the agent reads everything and generates a structured guide with sections, callouts, steps, and checklists. Completely free, no account needed.</p>
   <div class="hero-rule"></div>
 </section>
 
@@ -31,7 +31,7 @@
   <div class="card">
     <div class="step-pill">01 · UPLOAD</div>
     <h2>Upload Your Files</h2>
-    <p class="card-desc">Drop in scripts, images, PDFs, markdown, config files — anything you want documented.</p>
+    <p class="card-desc">Drop in scripts, images, PDFs, markdown, config files - anything you want documented.</p>
     <div class="drop-zone" id="drop-zone">
       <div class="drop-icon-wrap">↑</div>
       <div class="drop-label">Drop files here or <label for="file-input" class="file-link">browse</label></div>
@@ -125,5 +125,10 @@
 </footer>
 
 <script src="app.js"></script>
+<script>
+  // Always start at top on load/refresh
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('load', () => window.scrollTo(0, 0));
+</script>
 </body>
 </html>
