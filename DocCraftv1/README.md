@@ -74,4 +74,4 @@ Download as `.md` or copy raw Markdown.
 
 ## License
 
-© 2026 Keturah Phillips. All rights reserved.
+MIT — use it, fork it, build on it.
