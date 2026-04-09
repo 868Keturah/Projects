@@ -1,4 +1,3 @@
-// © 2026 Keturah Phillips. All rights reserved.
 
 const GROQ_API_KEY = "YOUR_GROQ_API_KEY_HERE";
 
@@ -40,7 +39,12 @@ function renderFileList() {
   list.querySelectorAll('.file-remove').forEach(btn => btn.addEventListener('click', () => { state.files.splice(parseInt(btn.dataset.i),1); renderFileList(); }));
 }
 
-const readText = f => new Promise((res,rej) => { const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsText(f); });
+const readText = f => new Promise((res,rej) => { const r=new FileReader(); r.onload=e=>res(sanitizeText(e.target.result)); r.onerror=rej; r.readAsText(f, 'UTF-8'); });
+
+function sanitizeText(str) {
+  // Remove null bytes and non-printable control characters (keep newlines/tabs)
+  return str.replace(/\0/g, '').replace(/[^\x09\x0A\x0D\x20-\x7E\x80-\uFFFF]/g, '');
+}
 
 async function buildFileContent() {
   const parts = [];
@@ -50,6 +54,12 @@ async function buildFileContent() {
     if (isPDF(file.name))    { parts.push(`[PDF file: ${file.name}]`); continue; }
     try {
       let text = await readText(file);
+      // Detect if file is still mostly garbage after sanitization
+      const printableRatio = (text.match(/[\x20-\x7E\n\r\t]/g) || []).length / (text.length || 1);
+      if (printableRatio < 0.7) {
+        parts.push(`[Skipped: ${file.name} — file appears corrupted or uses unsupported encoding. Try re-saving as UTF-8.]`);
+        continue;
+      }
       if (text.length > 40000) text = text.slice(0,40000) + '\n[truncated]';
       parts.push(`--- FILE: ${file.name} ---\n${text}\n--- END: ${file.name} ---`);
     } catch { parts.push(`[Could not read: ${file.name}]`); }
@@ -155,6 +165,13 @@ $('btn-generate').addEventListener('click', async () => {
     const fileContent = await buildFileContent();
 
     setProgress(40, 'Sending to Groq…');
+
+    if (!fileContent.trim() || fileContent.includes('corrupted or uses unsupported encoding')) {
+      const skipped = fileContent.includes('Skipped:');
+      if (skipped && fileContent.replace(/\[Skipped:.*?\]/gs, '').trim() === '') {
+        throw new Error('All uploaded files appear corrupted or unreadable. Please re-save your files as UTF-8 text and try again.');
+      }
+    }
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
